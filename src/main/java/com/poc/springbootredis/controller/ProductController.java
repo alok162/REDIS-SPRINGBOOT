@@ -1,41 +1,39 @@
 package com.poc.springbootredis.controller;
 
 import com.poc.springbootredis.entity.Product;
-import com.poc.springbootredis.repository.ProductRepository;
-import org.springframework.cache.annotation.Cacheable;
+import com.poc.springbootredis.service.ProductService;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @EnableCaching
 @RequestMapping("/product")
 public class ProductController {
-    private final ProductRepository productRepository;
-
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    private final ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PostMapping
     public Product save(@RequestBody Product product) {
-        return productRepository.save(product);
+        return productService.save(product);
     }
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    @Cacheable(key = "#id", value = "Product")
-    public Product getProduct(@PathVariable int id) {
-        return productRepository.findProductById(id);
+    public Optional<Product> getProduct(@PathVariable int id) {
+        return productService.getProduct(id);
     }
 
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable int id) {
-        return productRepository.deleteById(id);
+        return productService.deleteProduct(id);
     }
 }
